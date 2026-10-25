@@ -1,0 +1,20 @@
+---
+// Layout base: head, navbar y contenido de cada página (<slot />)
+import Navbar from "../features/navbar/Navbar.astro";
+import "../styles/global.css";
+
+const { title = "Mi sitio" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Navbar />
+    <slot />
+  </body>
+</html>

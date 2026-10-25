@@ -1,0 +1,45 @@
+---
+// Estructura del navbar (HTML puro, sin JS en el servidor)
+import { brand, logo, links, cta } from "./navbar.data";
+import "./navbar.css";
+
+// Ruta actual, para marcar el link activo
+const current = Astro.url.pathname;
+---
+
+<header class="navbar">
+  <nav class="navbar__inner" aria-label="Principal">
+    <a href="/" class="navbar__logo" aria-label={brand}>
+      <img src={logo.src} width={logo.width} height={logo.height} alt={brand} />
+    </a>
+
+    <!-- Menú: en desktop es una fila, en móvil un desplegable -->
+    <div class="navbar__menu" id="nav-menu" data-open="false">
+      <div class="navbar__links">
+        <ul class="navbar__list">
+          {links.map((l, i) => (
+            <li style={`--i:${i}`}>
+              <a href={l.href} aria-current={current === l.href ? "page" : undefined}>
+                {l.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <!-- Línea con brillo que se desliza bajo el link -->
+        <span class="navbar__indicator" aria-hidden="true"></span>
+      </div>
+      <a class="navbar__cta" href={cta.href}>{cta.label}</a>
+    </div>
+
+    <!-- Botón hamburguesa (solo móvil) -->
+    <button class="navbar__toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Abrir menú">
+      <span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<!-- Astro empaqueta este script y lo carga una sola vez -->
+<script>
+  import { initNavbar } from "./navbar.client";
+  initNavbar();
+</script>

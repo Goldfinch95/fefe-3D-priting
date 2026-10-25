@@ -1,0 +1,137 @@
+/* Barra principal: vidrio oscuro con borde inferior en degradé azul → rosa */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  border-image: linear-gradient(90deg, var(--blue), var(--pink)) 1;
+  transition: box-shadow 0.3s;
+}
+.navbar[data-scrolled] { box-shadow: 0 6px 28px rgb(45 143 213 / 0.15); }
+
+.navbar__inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.5rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.navbar__logo { display: flex; }
+.navbar__logo img { display: block; height: 52px; width: auto; transition: transform 0.3s; }
+.navbar__logo:hover img { transform: scale(1.06); }
+
+/* Menú (desktop): ocupa todo el alto para alinear la línea con el borde */
+.navbar__menu { display: flex; align-items: center; align-self: stretch; gap: 1.5rem; }
+.navbar__links { position: relative; align-self: stretch; display: flex; align-items: center; }
+.navbar__list { display: flex; gap: 0.25rem; list-style: none; margin: 0; padding: 0; }
+.navbar__list a {
+  display: block;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.25s;
+}
+.navbar__list a:hover,
+.navbar__list a[aria-current="page"] { color: var(--fg); }
+
+/* Línea azul con brillo (la mueve navbar.client.ts) */
+.navbar__indicator {
+  position: absolute;
+  left: 0;
+  bottom: -0.5rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--blue);
+  box-shadow: 0 0 10px var(--blue);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s;
+}
+
+/* Botón de acción: borde azul brillante que vira a rosa al pasar el mouse */
+.navbar__cta {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: var(--fg);
+  text-decoration: none;
+  border: 1px solid var(--blue);
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgb(45 143 213 / 0.5);
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+}
+.navbar__cta:hover {
+  border-color: var(--pink);
+  box-shadow: 0 0 14px rgb(232 51 127 / 0.6);
+  transform: translateY(-1px);
+}
+.navbar__cta:active { transform: scale(0.97); }
+
+/* Hamburguesa: oculta en desktop */
+.navbar__toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0.5rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.navbar__toggle span {
+  width: 20px;
+  height: 1.5px;
+  background: var(--fg);
+  transition: transform 0.3s, background 0.3s;
+}
+.navbar__toggle:hover span { background: var(--pink); }
+.navbar__toggle[aria-expanded="true"] span:first-child { transform: translateY(3.25px) rotate(45deg); }
+.navbar__toggle[aria-expanded="true"] span:last-child { transform: translateY(-3.25px) rotate(-45deg); }
+
+/* Móvil: el menú baja como desplegable con links escalonados */
+@media (max-width: 768px) {
+  .navbar__logo img { height: 44px; }
+  .navbar__toggle { display: flex; }
+  .navbar__indicator { display: none; }
+  .navbar__menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1rem 1.25rem 1.5rem;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+  }
+  .navbar__menu[data-open="true"] { opacity: 1; visibility: visible; transform: none; }
+  .navbar__links { display: block; }
+  .navbar__list { flex-direction: column; }
+  .navbar__list li {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .navbar__menu[data-open="true"] li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(var(--i) * 60ms + 80ms);
+  }
+  .navbar__list a { padding: 0.75rem 0; font-size: 1rem; }
+  .navbar__cta { text-align: center; padding: 0.75rem; }
+}
+
+/* Respeta a quien prefiere menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .navbar * { transition: none !important; }
+}

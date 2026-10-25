@@ -1,0 +1,45 @@
+/* Variables de color (claro/oscuro automático) y reset mínimo */
+:root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --muted: #6b6b66;
+  --line: rgb(0 0 0 / 0.08);
+  --line-strong: rgb(0 0 0 / 0.2);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e0e0e;
+    --fg: #f2f2ee;
+    --muted: #9a9a94;
+    --line: rgb(255 255 255 / 0.1);
+    --line-strong: rgb(255 255 255 / 0.25);
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+body.no-scroll { overflow: hidden; }/* Paleta del logo de Fefe 3D Printing (sitio oscuro) y reset mínimo */
+:root {
+  color-scheme: dark;
+  --bg: #0f0f10;
+  --fg: #f5f5f5;
+  --muted: #9a9aa0;
+  --blue: #2d8fd5;
+  --pink: #e8337f;
+  --line: rgb(255 255 255 / 0.1);
+  --line-strong: rgb(255 255 255 / 0.25);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+body.no-scroll { overflow: hidden; }

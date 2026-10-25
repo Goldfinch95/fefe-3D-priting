@@ -1,0 +1,65 @@
+---
+// Tabla de gastos: estructura (título, buscador, tabla y tarjetas en móvil)
+import { expenses, meta, columns, formatMoney, formatDate } from "./expenses.data.ts";
+import "./expenses.css";
+---
+
+<section class="expenses" id="expenses" data-singular={meta.singular} data-plural={meta.plural}>
+  <header class="expenses__head">
+    <h1>{meta.title}</h1>
+    <p>{meta.description}</p>
+  </header>
+
+  <!-- Barra superior: buscador y contador de resultados -->
+  <div class="expenses__bar">
+    <div class="expenses__search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>
+      </svg>
+      <input id="expenses-q" type="search" placeholder={meta.searchLabel} aria-label={meta.searchLabel} />
+    </div>
+    <span class="expenses__count" id="expenses-count" aria-live="polite">{expenses.length} {meta.plural}</span>
+  </div>
+
+  <!-- Los roles mantienen la semántica de tabla cuando el CSS la convierte en tarjetas -->
+  <div class="expenses__box">
+    <table class="expenses__table" role="table">
+      <caption class="expenses__sr">
+        {meta.title} con {columns.supplier.toLowerCase()}, {columns.date.toLowerCase()}, {columns.quantity.toLowerCase()}, {columns.amount.toLowerCase()} y {columns.notes.toLowerCase()}
+      </caption>
+      <thead role="rowgroup">
+        <tr role="row">
+          <th role="columnheader" scope="col"><button class="expenses__sort" data-col="0" data-type="text">{columns.description}</button></th>
+          <th role="columnheader" scope="col"><button class="expenses__sort" data-col="1" data-type="text">{columns.supplier}</button></th>
+          <th role="columnheader" scope="col"><button class="expenses__sort" data-col="2" data-type="number">{columns.date}</button></th>
+          <th role="columnheader" scope="col" class="expenses__num"><button class="expenses__sort" data-col="3" data-type="number">{columns.quantity}</button></th>
+          <th role="columnheader" scope="col" class="expenses__num"><button class="expenses__sort" data-col="4" data-type="number">{columns.amount}</button></th>
+          <th role="columnheader" scope="col">{columns.notes}</th>
+        </tr>
+      </thead>
+      <tbody role="rowgroup">
+        {expenses.map((e) => (
+          <tr role="row" data-search={`${e.description} ${e.supplier} ${e.notes ?? ""}`.toLowerCase()}>
+            <td role="cell" data-label={columns.description} data-v={e.description}>{e.description}</td>
+            <td role="cell" data-label={columns.supplier} data-v={e.supplier}>{e.supplier}</td>
+            <td role="cell" data-label={columns.date} data-v={new Date(e.date).getTime()}>{formatDate(e.date)}</td>
+            <td role="cell" class="expenses__num" data-label={columns.quantity} data-v={e.quantity}>{e.quantity}</td>
+            <td role="cell" class="expenses__num" data-label={columns.amount} data-v={e.amount}>{formatMoney(e.amount)}</td>
+            <td role="cell" data-label={columns.notes} data-empty={e.notes ? undefined : ""}>
+              {e.notes
+                ? <span class="expenses__notes" title={e.notes}>{e.notes}</span>
+                : <span class="expenses__dash">–</span>}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="expenses__empty" id="expenses-empty" hidden>{meta.empty}</p>
+  </div>
+</section>
+
+<!-- Astro empaqueta este script y lo carga una sola vez -->
+<script>
+  import { initExpenses } from "./expenses.client";
+  initExpenses();
+</script>

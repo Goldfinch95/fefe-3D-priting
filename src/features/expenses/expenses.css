@@ -1,0 +1,87 @@
+/* Contenedor de la página y título */
+.expenses { max-width: 72rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+.expenses__head h1 { margin: 0 0 0.25rem; font-size: 1.5rem; font-weight: 500; }
+.expenses__head p { margin: 0 0 1.25rem; font-size: 0.95rem; color: var(--muted); }
+.expenses__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Barra superior: buscador y contador */
+.expenses__bar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.75rem; }
+.expenses__search { position: relative; flex: 1; max-width: 18rem; }
+.expenses__search svg {
+  position: absolute; left: 0.7rem; top: 50%; width: 1rem; height: 1rem;
+  transform: translateY(-50%); color: var(--muted); pointer-events: none;
+}
+.expenses__search input {
+  width: 100%; height: 2.25rem; padding: 0 0.75rem 0 2.1rem;
+  font: inherit; font-size: 0.85rem; color: var(--fg);
+  background: transparent; border: 1px solid var(--line-strong); border-radius: 8px;
+  appearance: none; transition: border-color 0.25s, box-shadow 0.25s;
+}
+.expenses__search input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgb(45 143 213 / 0.25); }
+.expenses__count { font-size: 0.8rem; color: var(--muted); }
+
+/* Contenedor con borde (scroll horizontal en pantallas medias) y tabla sin franjas */
+.expenses__box { border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; }
+.expenses__table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.expenses__table th {
+  padding: 0.75rem 1rem; text-align: left; white-space: nowrap; font-size: 0.75rem; font-weight: 500;
+  color: var(--muted); border-bottom: 1px solid var(--line-strong);
+}
+.expenses__table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--line); transition: background 0.2s; }
+.expenses__table tbody tr:last-child td { border-bottom: 0; }
+.expenses__table tr[hidden] { display: none !important; }
+
+/* Hover: fondo sutil y barra azul a la izquierda */
+.expenses__table tbody tr:hover td { background: rgb(255 255 255 / 0.04); }
+.expenses__table tbody tr:hover td:first-child { box-shadow: inset 2px 0 0 var(--blue); }
+
+/* Números a la derecha con cifras tabulares */
+.expenses__num { text-align: right !important; font-variant-numeric: tabular-nums; }
+.expenses__num .expenses__sort { justify-content: flex-end; }
+
+/* Botón de orden: flecha según aria-sort */
+.expenses__sort { all: unset; display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; }
+.expenses__sort::after { content: "↕"; opacity: 0.45; }
+th[aria-sort="ascending"] .expenses__sort::after { content: "↑"; opacity: 1; color: var(--blue); }
+th[aria-sort="descending"] .expenses__sort::after { content: "↓"; opacity: 1; color: var(--blue); }
+.expenses__sort:hover { color: var(--fg); }
+.expenses__sort:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+
+/* Observaciones: una línea con puntos suspensivos (el texto completo está en el title) */
+.expenses__notes { display: block; max-width: 16rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.expenses__dash { color: var(--muted); }
+
+/* Sin resultados */
+.expenses__empty { margin: 0; padding: 1.75rem 1rem; text-align: center; color: var(--muted); }
+
+/* Móvil: cada fila pasa a ser una tarjeta con etiquetas */
+@media (max-width: 760px) {
+  .expenses { padding-top: 2rem; }
+  .expenses__bar { flex-direction: column; align-items: stretch; }
+  .expenses__search { max-width: none; }
+  .expenses__box { border: 0; border-radius: 0; overflow: visible; }
+  .expenses__table, .expenses__table tbody { display: block; }
+  .expenses__table thead { display: none; }
+  .expenses__table tr {
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0.4rem 1rem;
+    margin-bottom: 0.75rem; padding: 0.875rem 1rem;
+    border: 1px solid var(--line); border-radius: 12px; transition: border-color 0.25s;
+  }
+  .expenses__table tr:hover { border-color: var(--blue); }
+  .expenses__table td { display: flex; justify-content: space-between; gap: 1rem; grid-column: 1 / -1; padding: 0; border: 0; }
+  .expenses__table td::before { content: attr(data-label); color: var(--muted); }
+  /* Descripción arriba a la izquierda y monto arriba a la derecha, sin etiqueta */
+  .expenses__table td:nth-child(1) { grid-column: 1; grid-row: 1; font-size: 1rem; }
+  .expenses__table td:nth-child(5) { grid-column: 2; grid-row: 1; font-size: 1rem; font-weight: 500; }
+  .expenses__table td:nth-child(1)::before, .expenses__table td:nth-child(5)::before { display: none; }
+  /* Observaciones: texto completo y oculto si está vacío */
+  .expenses__notes { max-width: none; white-space: normal; text-align: right; }
+  .expenses__table td[data-empty] { display: none; }
+  .expenses__table tbody tr:hover td { background: none; }
+  .expenses__table tbody tr:hover td:first-child { box-shadow: none; }
+}
+
+/* Respeta a quien prefiere menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .expenses * { transition: none !important; }
+}
