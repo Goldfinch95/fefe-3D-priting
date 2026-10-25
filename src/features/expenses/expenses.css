@@ -18,6 +18,7 @@
   appearance: none; transition: border-color 0.25s, box-shadow 0.25s;
 }
 .expenses__search input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgb(45 143 213 / 0.25); }
+.expenses__actions { display: flex; align-items: center; gap: 1rem; }
 .expenses__count { font-size: 0.8rem; color: var(--muted); }
 
 /* Contenedor con borde (scroll horizontal en pantallas medias) y tabla sin franjas */
@@ -51,6 +52,18 @@ th[aria-sort="descending"] .expenses__sort::after { content: "↓"; opacity: 1; 
 .expenses__notes { display: block; max-width: 16rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
 .expenses__dash { color: var(--muted); }
 
+/* Filas clicables: abren el modal de edición. El lápiz aparece al pasar el mouse o enfocar */
+.expenses__table tbody tr { cursor: pointer; }
+.expenses__table tbody tr:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+.expenses__table .expenses__edit { width: 2.5rem; padding-left: 0; text-align: right; color: var(--blue); }
+.expenses__edit svg { width: 1rem; height: 1rem; vertical-align: middle; opacity: 0; transition: opacity 0.2s; }
+.expenses__table tr:hover .expenses__edit svg,
+.expenses__table tr:focus-visible .expenses__edit svg { opacity: 1; }
+
+/* Fila recién añadida o editada: destello azul que se desvanece */
+.expenses__table tr.is-new { animation: row-in 1.6s ease-out; }
+@keyframes row-in { from { background: rgb(45 143 213 / 0.25); } }
+
 /* Sin resultados */
 .expenses__empty { margin: 0; padding: 1.75rem 1rem; text-align: center; color: var(--muted); }
 
@@ -59,6 +72,7 @@ th[aria-sort="descending"] .expenses__sort::after { content: "↓"; opacity: 1; 
   .expenses { padding-top: 2rem; }
   .expenses__bar { flex-direction: column; align-items: stretch; }
   .expenses__search { max-width: none; }
+  .expenses__actions { justify-content: space-between; }
   .expenses__box { border: 0; border-radius: 0; overflow: visible; }
   .expenses__table, .expenses__table tbody { display: block; }
   .expenses__table thead { display: none; }
@@ -74,6 +88,8 @@ th[aria-sort="descending"] .expenses__sort::after { content: "↓"; opacity: 1; 
   .expenses__table td:nth-child(1) { grid-column: 1; grid-row: 1; font-size: 1rem; }
   .expenses__table td:nth-child(5) { grid-column: 2; grid-row: 1; font-size: 1rem; font-weight: 500; }
   .expenses__table td:nth-child(1)::before, .expenses__table td:nth-child(5)::before { display: none; }
+  /* El lápiz sobra en tarjetas: se toca la tarjeta entera */
+  .expenses__table td.expenses__edit { display: none; }
   /* Observaciones: texto completo y oculto si está vacío */
   .expenses__notes { max-width: none; white-space: normal; text-align: right; }
   .expenses__table td[data-empty] { display: none; }

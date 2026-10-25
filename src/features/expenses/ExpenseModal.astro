@@ -1,0 +1,61 @@
+---
+// Modal para añadir un gasto: usa <dialog> nativo (foco atrapado, Esc y fondo incluidos)
+import { columns, form } from "./expenses.data";
+import "./expensemodal.css";
+
+// Campos en grilla de 2 columnas (la descripción y las observaciones van aparte)
+const grid = [
+  { name: "supplier", type: "text", placeholder: form.placeholders.supplier },
+  { name: "date", type: "date" },
+  { name: "quantity", type: "number", min: "1", step: "1", inputmode: "numeric" },
+  { name: "amount", type: "number", min: "0", step: "any", inputmode: "decimal", placeholder: form.placeholders.amount },
+] as const;
+---
+
+<dialog class="modal" id="expense-modal" aria-labelledby="expense-modal-title">
+  <form class="modal__form" novalidate>
+    <div class="modal__head">
+      <h2 id="expense-modal-title" data-modal-title>{form.title}</h2>
+      <button type="button" class="modal__x" data-modal-close aria-label={form.close}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="field">
+      <label for="f-description">{columns.description}</label>
+      <input id="f-description" name="description" type="text" autocomplete="off" autofocus
+        placeholder={form.placeholders.description} aria-required="true" aria-describedby="e-description" />
+      <p class="field__error" id="e-description" hidden></p>
+    </div>
+
+    <div class="modal__grid">
+      {grid.map((f) => (
+        <div class="field">
+          <label for={`f-${f.name}`}>{columns[f.name]}</label>
+          <input id={`f-${f.name}`} name={f.name} type={f.type} autocomplete="off" aria-required="true"
+            aria-describedby={`e-${f.name}`} placeholder={"placeholder" in f ? f.placeholder : undefined}
+            min={"min" in f ? f.min : undefined} step={"step" in f ? f.step : undefined}
+            inputmode={"inputmode" in f ? f.inputmode : undefined} />
+          <p class="field__error" id={`e-${f.name}`} hidden></p>
+        </div>
+      ))}
+    </div>
+
+    <div class="field">
+      <label for="f-notes">{columns.notes} {form.optional}</label>
+      <textarea id="f-notes" name="notes"></textarea>
+    </div>
+
+    <div class="modal__actions">
+      <button type="button" class="btn btn--ghost" data-modal-close>{form.cancel}</button>
+      <button type="submit" class="btn" data-modal-submit>{form.submit}</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  import { initExpenseModal } from "./expensemodal.client";
+  initExpenseModal();
+</script>

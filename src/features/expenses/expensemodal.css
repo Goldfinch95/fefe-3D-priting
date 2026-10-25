@@ -1,0 +1,56 @@
+/* Ventana centrada con fondo oscurecido y borde con brillo suave */
+.modal {
+  width: min(28rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  color: var(--fg);
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  box-shadow: 0 0 30px rgb(45 143 213 / 0.15);
+}
+.modal::backdrop { background: rgb(0 0 0 / 0.62); backdrop-filter: blur(2px); }
+
+/* Animación de entrada y de salida (la clase is-closing la pone el JS) */
+.modal[open] { animation: modal-in 0.25s ease-out; }
+.modal[open]::backdrop { animation: fade 0.25s ease-out; }
+.modal.is-closing { animation: modal-out 0.18s ease-in forwards; }
+.modal.is-closing::backdrop { animation: fade 0.18s ease-in reverse forwards; }
+@keyframes modal-in { from { opacity: 0; transform: translateY(12px) scale(0.98); } }
+@keyframes modal-out { to { opacity: 0; transform: translateY(8px) scale(0.98); } }
+@keyframes fade { from { opacity: 0; } }
+
+/* Formulario: si la pantalla es baja, hace scroll adentro */
+.modal__form {
+  display: flex; flex-direction: column; gap: 0.875rem;
+  max-height: calc(100dvh - 2rem); padding: 1.25rem; overflow-y: auto;
+}
+.modal__head { display: flex; align-items: center; justify-content: space-between; }
+.modal__head h2 { margin: 0; font-size: 1rem; font-weight: 500; }
+.modal__x { all: unset; display: grid; place-items: center; padding: 0.35rem; color: var(--muted); border-radius: 6px; cursor: pointer; }
+.modal__x svg { width: 1.1rem; height: 1.1rem; }
+.modal__x:hover { color: var(--fg); }
+.modal__x:focus-visible { outline: 2px solid var(--blue); }
+.modal__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+.modal__actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.25rem; }
+
+/* Campos: mismo estilo que el buscador; borde rosa si hay error */
+.field label { display: block; margin-bottom: 0.35rem; font-size: 0.75rem; color: var(--muted); }
+.field input, .field textarea {
+  width: 100%; height: 2.25rem; padding: 0 0.75rem;
+  font: inherit; font-size: 0.85rem; color: var(--fg);
+  background: transparent; border: 1px solid var(--line-strong); border-radius: 8px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.field textarea { height: 4.5rem; padding: 0.5rem 0.75rem; resize: none; }
+.field input:focus, .field textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgb(45 143 213 / 0.25); }
+.field [aria-invalid] { border-color: var(--pink); }
+.field__error { margin: 0.3rem 0 0; font-size: 0.75rem; color: var(--pink); }
+
+/* En celulares angostos los campos van de a uno */
+@media (max-width: 480px) { .modal__grid { grid-template-columns: 1fr; } }
+
+/* Respeta a quien prefiere menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .modal, .modal::backdrop, .field input, .field textarea { animation: none !important; transition: none !important; }
+}

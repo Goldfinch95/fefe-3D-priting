@@ -1,34 +1,10 @@
-/* Variables de color (claro/oscuro automático) y reset mínimo */
-:root {
-  --bg: #ffffff;
-  --fg: #111111;
-  --muted: #6b6b66;
-  --line: rgb(0 0 0 / 0.08);
-  --line-strong: rgb(0 0 0 / 0.2);
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0e0e0e;
-    --fg: #f2f2ee;
-    --muted: #9a9a94;
-    --line: rgb(255 255 255 / 0.1);
-    --line-strong: rgb(255 255 255 / 0.25);
-  }
-}
-
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: var(--fg);
-}
-body.no-scroll { overflow: hidden; }/* Paleta del logo de Fefe 3D Printing (sitio oscuro) y reset mínimo */
+/* Paleta del logo de Fefe 3D Printing (sitio oscuro) y reset mínimo */
 :root {
   color-scheme: dark;
   --bg: #0f0f10;
   --fg: #f5f5f5;
   --muted: #9a9aa0;
+  --panel: #161618;
   --blue: #2d8fd5;
   --pink: #e8337f;
   --line: rgb(255 255 255 / 0.1);
@@ -43,3 +19,19 @@ body {
   color: var(--fg);
 }
 body.no-scroll { overflow: hidden; }
+
+/* Botón con borde azul y brillo; pasa a rosa al hover (.btn--ghost = secundario) */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.5rem 1rem; font: inherit; font-size: 0.85rem; color: var(--fg);
+  background: transparent; border: 1px solid var(--blue); border-radius: 8px;
+  box-shadow: 0 0 12px rgb(45 143 213 / 0.5); cursor: pointer;
+  transition: border-color 0.25s, box-shadow 0.25s, color 0.25s, transform 0.2s;
+}
+.btn svg { width: 1rem; height: 1rem; }
+.btn:hover { border-color: var(--pink); box-shadow: 0 0 14px rgb(232 51 127 / 0.6); transform: translateY(-1px); }
+.btn:active { transform: scale(0.97); }
+.btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.btn--ghost { color: var(--muted); border-color: var(--line-strong); box-shadow: none; }
+.btn--ghost:hover { color: var(--fg); border-color: var(--fg); box-shadow: none; }
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
