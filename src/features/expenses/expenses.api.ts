@@ -21,6 +21,7 @@ async function request<T>(url: string, method: string, body?: ExpenseInput): Pro
   return res.json();
 }
 
+export const fetchExpenses = () => request<Expense[]>(BASE, "GET");
 export const createExpense = (data: ExpenseInput) => request<Expense>(BASE, "POST", data);
 export const updateExpense = (id: string, data: ExpenseInput) => request<Expense>(`${BASE}/${id}`, "PUT", data);
 export const deleteExpense = (id: string) => request<{ ok: true }>(`${BASE}/${id}`, "DELETE");

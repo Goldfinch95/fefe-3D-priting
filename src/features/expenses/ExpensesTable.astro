@@ -18,7 +18,8 @@ try {
 const data = JSON.stringify(expenses).replace(/</g, "\\u003c");
 ---
 
-<section class="expenses" id="expenses" data-singular={meta.singular} data-plural={meta.plural} data-load-error={loadFailed || undefined}>
+<section class="expenses" id="expenses" data-singular={meta.singular} data-plural={meta.plural} data-load-error={loadFailed || undefined}
+  data-sb-url={import.meta.env.PUBLIC_SUPABASE_URL} data-sb-key={import.meta.env.PUBLIC_SUPABASE_ANON_KEY}>
   <header class="expenses__head">
     <h1>{meta.title}</h1>
     <p>{meta.description}</p>

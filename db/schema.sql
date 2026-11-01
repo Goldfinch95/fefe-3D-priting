@@ -1,4 +1,4 @@
--- Tabla de gastos. Ejecutala una sola vez en el SQL Editor de Neon.
+-- Tabla de gastos. Ejecutala una sola vez en el SQL Editor de Supabase.
 create table if not exists expenses (
   id          uuid primary key default gen_random_uuid(),
   description text         not null check (char_length(description) between 1 and 200),
@@ -13,6 +13,24 @@ create table if not exists expenses (
 
 -- Lista ordenada por los más nuevos primero
 create index if not exists expenses_created_at_idx on expenses (created_at desc);
+
+-- Tiempo real: el navegador solo puede LEER (para recibir avisos de cambios).
+-- Escribir lo hace únicamente el servidor del sitio, que se conecta con su propia clave.
+alter table expenses enable row level security;
+
+do $$
+begin
+  -- Permiso de lectura para la clave pública (anon); sin permisos de escritura
+  if exists (select 1 from pg_roles where rolname = 'anon') then
+    drop policy if exists "expenses_realtime_read" on expenses;
+    create policy "expenses_realtime_read" on expenses for select to anon using (true);
+  end if;
+  -- Activa los avisos de cambios en la tabla
+  if exists (select 1 from pg_publication where pubname = 'supabase_realtime')
+     and not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and tablename = 'expenses') then
+    alter publication supabase_realtime add table expenses;
+  end if;
+end $$;
 
 -- (Opcional) datos de ejemplo para probar:
 -- insert into expenses (description, supplier, date, quantity, amount, notes) values

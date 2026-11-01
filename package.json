@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@astrojs/vercel": "^11.0.17",
+    "@supabase/supabase-js": "^2.118.0",
     "astro": "^7.4.2",
     "postgres": "^4.0.0"
   }

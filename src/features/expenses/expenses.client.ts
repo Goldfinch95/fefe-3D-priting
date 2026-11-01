@@ -1,6 +1,7 @@
 // Lógica de la tabla en el navegador: lista, buscador, orden, edición y borrado
 import { meta, errors, type Expense } from "./expenses.data";
-import { deleteExpense } from "./expenses.api";
+import { deleteExpense, fetchExpenses } from "./expenses.api";
+import { watchExpenses } from "./expenses.realtime";
 import { createRow } from "./expenses.row";
 
 export function initExpenses() {
@@ -16,6 +17,7 @@ export function initExpenses() {
   const { singular = "", plural = "" } = root.dataset;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const items = new Map<string, Expense>(); // gastos por id
+  let version = 0; // cambia con cada acción propia, para descartar listas viejas
   let sort = { col: -1, dir: 1, numeric: false };
   const rows = () => Array.from(body.rows);
 
@@ -130,6 +132,7 @@ export function initExpenses() {
       row.classList.remove("is-removing");
       return showError((e as Error).message === errors.save ? errors.delete : (e as Error).message);
     }
+    version++;
     items.delete(id);
     row.remove();
     applyFilter();
@@ -153,6 +156,7 @@ export function initExpenses() {
   // El modal avisa cuando el servidor guardó un gasto (nuevo o editado)
   document.addEventListener("expense:saved", (ev) => {
     const { expense, isNew } = (ev as CustomEvent<{ expense: Expense; isNew: boolean }>).detail;
+    version++;
     items.set(expense.id, expense);
 
     if (isNew) {
@@ -177,4 +181,43 @@ export function initExpenses() {
     applyFilter();
     flash(row);
   });
+
+  // Sincroniza con el servidor: solo toca las filas que cambiaron (así no se pierde el foco)
+  let syncing = false;
+  const sync = async () => {
+    if (syncing || document.hidden) return;
+    syncing = true;
+    const seen = version;
+    try {
+      const list = await fetchExpenses();
+      if (seen !== version) return; // hubo una acción propia mientras tanto: lista vieja
+      const ids = new Set(list.map((e) => e.id));
+      rows().forEach((r) => {
+        if (!ids.has(r.dataset.id ?? "") && !r.classList.contains("is-removing")) r.remove();
+      });
+      [...list].reverse().forEach((e) => {
+        const old = items.get(e.id);
+        if (old && JSON.stringify(old) === JSON.stringify(e)) return;
+        const fresh = createRow(e);
+        const row = body.querySelector<HTMLTableRowElement>(`tr[data-id="${CSS.escape(e.id)}"]`);
+        row ? row.replaceWith(fresh) : body.prepend(fresh);
+        flash(fresh);
+      });
+      items.clear();
+      list.forEach((e) => items.set(e.id, e));
+      applySort();
+      applyFilter();
+    } catch {
+      /* sin conexión: se reintenta en el próximo aviso */
+    } finally {
+      syncing = false;
+    }
+  };
+
+  // Se actualiza al volver a la pestaña y, si Supabase está configurado, al instante
+  document.addEventListener("visibilitychange", sync);
+  document.addEventListener("expenses:refresh", sync);
+  const { sbUrl, sbKey } = root.dataset;
+  let timer = 0;
+  if (sbUrl && sbKey) watchExpenses(sbUrl, sbKey, () => { clearTimeout(timer); timer = window.setTimeout(sync, 250); }).catch(() => {});
 }
