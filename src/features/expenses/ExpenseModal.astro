@@ -1,11 +1,11 @@
 ---
 // Modal para añadir un gasto: usa <dialog> nativo (foco atrapado, Esc y fondo incluidos)
 import { columns, form } from "./expenses.data";
-import "./expensemodal.css";
+import "./expense-modal.css";
 
 // Campos en grilla de 2 columnas (la descripción y las observaciones van aparte)
 const grid = [
-  { name: "supplier", type: "text", placeholder: form.placeholders.supplier },
+  { name: "supplier", type: "text", maxlength: "120", placeholder: form.placeholders.supplier },
   { name: "date", type: "date" },
   { name: "quantity", type: "number", min: "1", step: "1", inputmode: "numeric" },
   { name: "amount", type: "number", min: "0", step: "any", inputmode: "decimal", placeholder: form.placeholders.amount },
@@ -26,7 +26,7 @@ const grid = [
     <div class="field">
       <label for="f-description">{columns.description}</label>
       <input id="f-description" name="description" type="text" autocomplete="off" autofocus
-        placeholder={form.placeholders.description} aria-required="true" aria-describedby="e-description" />
+        placeholder={form.placeholders.description} maxlength="200" aria-required="true" aria-describedby="e-description" />
       <p class="field__error" id="e-description" hidden></p>
     </div>
 
@@ -37,7 +37,7 @@ const grid = [
           <input id={`f-${f.name}`} name={f.name} type={f.type} autocomplete="off" aria-required="true"
             aria-describedby={`e-${f.name}`} placeholder={"placeholder" in f ? f.placeholder : undefined}
             min={"min" in f ? f.min : undefined} step={"step" in f ? f.step : undefined}
-            inputmode={"inputmode" in f ? f.inputmode : undefined} />
+            inputmode={"inputmode" in f ? f.inputmode : undefined} maxlength={"maxlength" in f ? f.maxlength : undefined} />
           <p class="field__error" id={`e-${f.name}`} hidden></p>
         </div>
       ))}
@@ -45,8 +45,10 @@ const grid = [
 
     <div class="field">
       <label for="f-notes">{columns.notes} {form.optional}</label>
-      <textarea id="f-notes" name="notes"></textarea>
+      <textarea id="f-notes" name="notes" maxlength="1000"></textarea>
     </div>
+
+    <p class="modal__error" id="modal-error" role="alert" hidden></p>
 
     <div class="modal__actions">
       <button type="button" class="btn btn--ghost" data-modal-close>{form.cancel}</button>
@@ -56,6 +58,6 @@ const grid = [
 </dialog>
 
 <script>
-  import { initExpenseModal } from "./expensemodal.client";
+  import { initExpenseModal } from "./expense-modal.client";
   initExpenseModal();
 </script>

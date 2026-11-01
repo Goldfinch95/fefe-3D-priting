@@ -3,7 +3,7 @@ export const brand = "Fefe 3D Printing";
 export const logo = { src: "/logo.png", width: 51, height: 52 };
 
 export const links = [
-  { label: "Inicio", href: "/" },
+  { label: "Gastos", href: "/expenses" },
   { label: "Servicios", href: "/servicios" },
   { label: "Nosotros", href: "/nosotros" },
   { label: "Contacto", href: "/contacto" },

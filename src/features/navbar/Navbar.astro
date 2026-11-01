@@ -3,8 +3,8 @@
 import { brand, logo, links, cta } from "./navbar.data";
 import "./navbar.css";
 
-// Ruta actual, para marcar el link activo
-const current = Astro.url.pathname;
+// Ruta actual (sin barra final), para marcar el link activo
+const current = Astro.url.pathname.replace(/\/$/, "") || "/";
 ---
 
 <header class="navbar">

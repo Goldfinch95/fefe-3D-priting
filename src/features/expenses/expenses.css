@@ -55,14 +55,35 @@ th[aria-sort="descending"] .expenses__sort::after { content: "↓"; opacity: 1; 
 /* Filas clicables: abren el modal de edición. El lápiz aparece al pasar el mouse o enfocar */
 .expenses__table tbody tr { cursor: pointer; }
 .expenses__table tbody tr:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
-.expenses__table .expenses__edit { width: 2.5rem; padding-left: 0; text-align: right; color: var(--blue); }
-.expenses__edit svg { width: 1rem; height: 1rem; vertical-align: middle; opacity: 0; transition: opacity 0.2s; }
-.expenses__table tr:hover .expenses__edit svg,
-.expenses__table tr:focus-visible .expenses__edit svg { opacity: 1; }
+.expenses__table .expenses__tools { width: 1%; padding: 0 0.5rem 0 0; text-align: right; white-space: nowrap; }
+.expenses__pencil { width: 1rem; height: 1rem; margin-right: 0.25rem; vertical-align: middle; color: var(--blue); }
+
+/* Papelera: aparece al pasar el mouse; el primer toque pide confirmar (rosa) */
+.expenses__del {
+  all: unset; display: inline-flex; align-items: center; gap: 0.35rem; vertical-align: middle;
+  padding: 0.375rem 0.5rem; border-radius: 8px; font-size: 0.75rem; color: var(--muted); cursor: pointer;
+  transition: opacity 0.2s, color 0.2s, background 0.2s;
+}
+.expenses__del svg { width: 1rem; height: 1rem; }
+.expenses__del-label { display: none; }
+.expenses__del:hover { color: var(--pink); background: rgb(232 51 127 / 0.12); }
+.expenses__del:focus-visible { outline: 2px solid var(--blue); }
+.expenses__del.is-armed { color: #fff; background: var(--pink); }
+.expenses__del.is-armed .expenses__del-label { display: inline; }
+.expenses__pencil, .expenses__del { opacity: 0; }
+.expenses__table tr:hover :is(.expenses__pencil, .expenses__del),
+.expenses__table tr:focus-visible :is(.expenses__pencil, .expenses__del),
+.expenses__del:focus-visible, .expenses__del.is-armed { opacity: 1; }
+
+/* Fila que se está borrando: se desvanece */
+.expenses__table tr.is-removing { opacity: 0; pointer-events: none; transition: opacity 0.25s; }
 
 /* Fila recién añadida o editada: destello azul que se desvanece */
 .expenses__table tr.is-new { animation: row-in 1.6s ease-out; }
 @keyframes row-in { from { background: rgb(45 143 213 / 0.25); } }
+
+/* Error del servidor (cargar o borrar) */
+.expenses__error { margin: 0 0 0.75rem; font-size: 0.85rem; color: var(--pink); }
 
 /* Sin resultados */
 .expenses__empty { margin: 0; padding: 1.75rem 1rem; text-align: center; color: var(--muted); }
@@ -88,8 +109,14 @@ th[aria-sort="descending"] .expenses__sort::after { content: "↓"; opacity: 1; 
   .expenses__table td:nth-child(1) { grid-column: 1; grid-row: 1; font-size: 1rem; }
   .expenses__table td:nth-child(5) { grid-column: 2; grid-row: 1; font-size: 1rem; font-weight: 500; }
   .expenses__table td:nth-child(1)::before, .expenses__table td:nth-child(5)::before { display: none; }
-  /* El lápiz sobra en tarjetas: se toca la tarjeta entera */
-  .expenses__table td.expenses__edit { display: none; }
+  /* Tarjeta: pie con la papelera siempre visible y su texto; sin lápiz */
+  .expenses__table td.expenses__tools {
+    display: flex; justify-content: flex-end; width: auto; margin-top: 0.25rem; padding: 0.5rem 0 0;
+    border-top: 1px solid var(--line);
+  }
+  .expenses__pencil { display: none; }
+  .expenses__del { opacity: 1; }
+  .expenses__del-label { display: inline; }
   /* Observaciones: texto completo y oculto si está vacío */
   .expenses__notes { max-width: none; white-space: normal; text-align: right; }
   .expenses__table td[data-empty] { display: none; }

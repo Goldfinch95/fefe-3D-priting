@@ -1,11 +1,24 @@
 ---
-// Tabla de gastos: estructura (título, buscador, botón, tabla y modal)
-import { meta, columns } from "./expenses.data";
+// Tabla de gastos: estructura (título, buscador, botón, tabla y modal).
+// Los gastos se leen de la base de datos en el servidor y viajan dentro de la página.
+import { meta, columns, errors, type Expense } from "./expenses.data";
+import { listExpenses } from "./expenses.repo";
 import ExpenseModal from "./ExpenseModal.astro";
 import "./expenses.css";
+
+let expenses: Expense[] = [];
+let loadFailed = false;
+try {
+  expenses = await listExpenses();
+} catch (e) {
+  console.error("No se pudieron leer los gastos", e);
+  loadFailed = true;
+}
+// "<" escapado para que el JSON no pueda cerrar la etiqueta <script>
+const data = JSON.stringify(expenses).replace(/</g, "\\u003c");
 ---
 
-<section class="expenses" id="expenses" data-singular={meta.singular} data-plural={meta.plural}>
+<section class="expenses" id="expenses" data-singular={meta.singular} data-plural={meta.plural} data-load-error={loadFailed || undefined}>
   <header class="expenses__head">
     <h1>{meta.title}</h1>
     <p>{meta.description}</p>
@@ -30,6 +43,9 @@ import "./expenses.css";
     </div>
   </div>
 
+  <!-- Errores del servidor (cargar o borrar) -->
+  <p class="expenses__error" id="expenses-error" role="alert" hidden={!loadFailed}>{loadFailed ? errors.load : ""}</p>
+
   <!-- Los roles mantienen la semántica de tabla cuando el CSS la convierte en tarjetas -->
   <div class="expenses__box">
     <table class="expenses__table" role="table">
@@ -44,14 +60,19 @@ import "./expenses.css";
           <th role="columnheader" scope="col" class="expenses__num"><button class="expenses__sort" data-col="3" data-type="number">{columns.quantity}</button></th>
           <th role="columnheader" scope="col" class="expenses__num"><button class="expenses__sort" data-col="4" data-type="number">{columns.amount}</button></th>
           <th role="columnheader" scope="col">{columns.notes}</th>
-          <th role="columnheader" scope="col" class="expenses__edit"><span class="expenses__sr">Editar</span></th>
+          <th role="columnheader" scope="col" class="expenses__tools"><span class="expenses__sr">Acciones</span></th>
         </tr>
       </thead>
-      <!-- Las filas las arma expenses.client.ts (datos de ejemplo + guardados) -->
+      <!-- Las filas las arma expenses.client.ts a partir del JSON de abajo -->
       <tbody role="rowgroup"></tbody>
     </table>
     <p class="expenses__empty" id="expenses-empty" hidden></p>
   </div>
+
+  <script type="application/json" id="expenses-data" is:inline set:html={data} />
+
+  <!-- Avisos para lectores de pantalla (¿Seguro?, gasto eliminado) -->
+  <p class="expenses__sr" id="expenses-status" aria-live="polite"></p>
 
   <ExpenseModal />
 </section>
