@@ -10,7 +10,7 @@ const cols = () =>
 
 export async function listSales(): Promise<Sale[]> {
   const sql = getDb();
-  return sql<Sale[]>`select ${cols()} from sales order by created_at desc, id`;
+  return sql<Sale[]>`select ${cols()} from sales order by date desc, created_at desc, id`;
 }
 
 export async function createSale(s: SaleInput): Promise<Sale> {

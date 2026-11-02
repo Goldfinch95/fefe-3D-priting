@@ -62,16 +62,18 @@ export function initSales() {
     updateSummary();
   };
 
-  // Orden por la columna activa (no hace nada si todavía no se eligió una)
+  // Orden: por la columna elegida o, si no hay ninguna, lo más reciente primero (fecha, y a igual fecha
+  // queda arriba lo último cargado, porque el sort es estable y las filas nuevas entran arriba)
   const applySort = () => {
     const { col, dir, numeric } = sort;
-    if (col < 0) return;
-    const sorted = rows().sort((a, b) => {
+    const before = rows();
+    const sorted = [...before].sort((a, b) => {
+      if (col < 0) return Number(b.cells[2].dataset.v) - Number(a.cells[2].dataset.v);
       const x = a.cells[col].dataset.v ?? "";
       const y = b.cells[col].dataset.v ?? "";
       return (numeric ? Number(x) - Number(y) : x.localeCompare(y, "es")) * dir;
     });
-    body.append(...sorted);
+    if (sorted.some((r, i) => r !== before[i])) body.append(...sorted); // solo mueve filas si cambió el orden
   };
 
   // Destello azul en una fila recién añadida o editada

@@ -9,7 +9,7 @@ const cols = () => getDb()`id, description, supplier, to_char(date, 'YYYY-MM-DD'
 
 export async function listExpenses(): Promise<Expense[]> {
   const sql = getDb();
-  return sql<Expense[]>`select ${cols()} from expenses order by created_at desc, id`;
+  return sql<Expense[]>`select ${cols()} from expenses order by date desc, created_at desc, id`;
 }
 
 export async function createExpense(e: ExpenseInput): Promise<Expense> {
