@@ -23,6 +23,8 @@ export const meta = {
   none: "Todavía no hay gastos. Añadí el primero.",
   singular: "gasto",
   plural: "gastos",
+  // Tarjeta de total
+  summary: { label: "Resumen de gastos", total: "Total gastado", filtered: "Total filtrado:", biggest: "Mayor" },
 };
 
 // Mensajes cuando algo falla con el servidor
@@ -57,7 +59,8 @@ export const form = {
   placeholders: { description: "Filamento PLA negro 1 kg", supplier: "Nombre del proveedor", amount: "0" },
 };
 
+// Sin decimales si es entero; con dos si tiene centavos ($1.500 / $1.500,30)
 export const formatMoney = (n: number) =>
-  `$${n.toLocaleString("es-AR", { maximumFractionDigits: 2 })}`;
+  `$${n.toLocaleString("es-AR", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 })}`;
 export const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });

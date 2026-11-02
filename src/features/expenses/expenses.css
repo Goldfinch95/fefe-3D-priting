@@ -38,6 +38,8 @@
 
 /* Números a la derecha con cifras tabulares */
 .expenses__num { text-align: right !important; font-variant-numeric: tabular-nums; }
+/* Monto destacado en azul */
+.expenses__amount { color: var(--blue); font-weight: 600; }
 .expenses__num .expenses__sort { justify-content: flex-end; }
 
 /* Botón de orden: flecha según aria-sort */

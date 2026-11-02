@@ -1,0 +1,28 @@
+---
+// Tarjeta con el total gastado, la cantidad de gastos y el gasto mayor.
+// Se dibuja en el servidor y expenses.client.ts la actualiza cuando algo cambia.
+import { meta, formatMoney } from "./expenses.data";
+import type { Summary } from "./expenses.summary";
+import "./expenses-summary.css";
+
+interface Props { summary: Summary }
+const { summary } = Astro.props;
+const { total, count, biggest } = summary;
+---
+
+<section class="summary" id="expenses-summary" aria-label={meta.summary.label}>
+  <div class="summary__main">
+    <p class="summary__label">{meta.summary.total}</p>
+    <p class="summary__total" id="summary-total">{formatMoney(total)}</p>
+    <!-- Solo aparece mientras hay una búsqueda activa -->
+    <p class="summary__filtered" id="summary-filtered" hidden>
+      {meta.summary.filtered} <strong id="summary-filtered-value"></strong>
+    </p>
+  </div>
+  <div class="summary__side">
+    <span class="summary__chip" id="summary-count">{count} {count === 1 ? meta.singular : meta.plural}</span>
+    <p class="summary__biggest" id="summary-biggest" hidden={!biggest}>
+      {meta.summary.biggest}: <span id="summary-biggest-text">{biggest ? `${biggest.description} · ${formatMoney(biggest.amount)}` : ""}</span>
+    </p>
+  </div>
+</section>

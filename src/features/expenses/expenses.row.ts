@@ -50,7 +50,7 @@ export function createRow(e: Expense): HTMLTableRowElement {
     cell(columns.supplier, e.supplier, e.supplier),
     cell(columns.date, new Date(e.date).getTime(), formatDate(e.date)),
     cell(columns.quantity, e.quantity, String(e.quantity), "expenses__num"),
-    cell(columns.amount, e.amount, formatMoney(e.amount), "expenses__num"),
+    cell(columns.amount, e.amount, formatMoney(e.amount), "expenses__num expenses__amount"),
     notesCell,
     tools
   );

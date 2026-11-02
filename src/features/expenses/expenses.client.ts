@@ -2,6 +2,8 @@
 import { meta, errors, type Expense } from "./expenses.data";
 import { deleteExpense, fetchExpenses } from "./expenses.api";
 import { watchExpenses } from "./expenses.realtime";
+import { summarize, sumAmounts } from "./expenses.summary";
+import { formatMoney } from "./expenses.data";
 import { createRow } from "./expenses.row";
 
 export function initExpenses() {
@@ -14,6 +16,7 @@ export function initExpenses() {
   const status = root.querySelector<HTMLElement>("#expenses-status")!;
   const errorBox = root.querySelector<HTMLElement>("#expenses-error")!;
   const body = root.querySelector<HTMLTableSectionElement>("tbody")!;
+  const sum = (id: string) => root.querySelector<HTMLElement>(`#summary-${id}`)!;
   const { singular = "", plural = "" } = root.dataset;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const items = new Map<string, Expense>(); // gastos por id
@@ -30,6 +33,22 @@ export function initExpenses() {
     errorTimer = window.setTimeout(() => (errorBox.hidden = true), 6000);
   };
 
+  // Tarjeta de total: total general siempre y, si hay búsqueda, también el de lo filtrado
+  const updateSummary = () => {
+    const all = Array.from(items.values());
+    const { total, count, biggest } = summarize(all);
+    sum("total").textContent = formatMoney(total);
+    sum("count").textContent = `${count} ${count === 1 ? singular : plural}`;
+    sum("biggest").hidden = !biggest;
+    if (biggest) sum("biggest-text").textContent = `${biggest.description} · ${formatMoney(biggest.amount)}`;
+    const searching = input.value.trim() !== "";
+    sum("filtered").hidden = !searching;
+    if (searching) {
+      const shown = new Set(rows().filter((r) => !r.hidden).map((r) => r.dataset.id));
+      sum("filtered-value").textContent = formatMoney(sumAmounts(all.filter((e) => shown.has(e.id))));
+    }
+  };
+
   // Filtro: oculta filas sin coincidencia y actualiza contador y mensaje
   const applyFilter = () => {
     const q = input.value.toLowerCase().trim();
@@ -42,6 +61,7 @@ export function initExpenses() {
     empty.hidden = n > 0 || "loadError" in root.dataset;
     empty.textContent = body.rows.length ? meta.empty : meta.none;
     count.textContent = `${n} ${n === 1 ? singular : plural}`;
+    updateSummary();
   };
 
   // Orden por la columna activa (no hace nada si todavía no se eligió una)

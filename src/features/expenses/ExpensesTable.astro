@@ -4,6 +4,8 @@
 import { meta, columns, errors, type Expense } from "./expenses.data";
 import { listExpenses } from "./expenses.repo";
 import ExpenseModal from "./ExpenseModal.astro";
+import ExpensesSummary from "./ExpensesSummary.astro";
+import { summarize } from "./expenses.summary";
 import "./expenses.css";
 
 let expenses: Expense[] = [];
@@ -24,6 +26,8 @@ const data = JSON.stringify(expenses).replace(/</g, "\\u003c");
     <h1>{meta.title}</h1>
     <p>{meta.description}</p>
   </header>
+
+  <ExpensesSummary summary={summarize(expenses)} />
 
   <!-- Barra superior: buscador, contador y botón para añadir -->
   <div class="expenses__bar">
