@@ -1,7 +1,7 @@
 // Lógica de la tabla en el navegador: lista, buscador, orden, edición y borrado
 import { meta, errors, type Expense } from "./expenses.data";
 import { deleteExpense, fetchExpenses } from "./expenses.api";
-import { watchExpenses } from "./expenses.realtime";
+import { watchTable } from "../../shared/realtime";
 import { summarize, sumAmounts } from "./expenses.summary";
 import { formatMoney } from "./expenses.data";
 import { createRow } from "./expenses.row";
@@ -239,5 +239,5 @@ export function initExpenses() {
   document.addEventListener("expenses:refresh", sync);
   const { sbUrl, sbKey } = root.dataset;
   let timer = 0;
-  if (sbUrl && sbKey) watchExpenses(sbUrl, sbKey, () => { clearTimeout(timer); timer = window.setTimeout(sync, 250); }).catch(() => {});
+  if (sbUrl && sbKey) watchTable(sbUrl, sbKey, "expenses", () => { clearTimeout(timer); timer = window.setTimeout(sync, 250); }).catch(() => {});
 }

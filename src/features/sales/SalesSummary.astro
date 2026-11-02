@@ -1,0 +1,32 @@
+---
+// Tarjeta con el total vendido, la cantidad de ventas y lo vendido por Fede y por Fer.
+// Se dibuja en el servidor y sales.client.ts la actualiza cuando algo cambia.
+import { meta, formatMoney, sellers } from "./sales.data";
+import type { Summary } from "./sales.summary";
+import "../../styles/summary.css";
+
+interface Props { summary: Summary }
+const { total, count, bySeller } = Astro.props.summary;
+---
+
+<section class="summary" id="sales-summary" aria-label={meta.summary.label}>
+  <div class="summary__main">
+    <p class="summary__label">{meta.summary.total}</p>
+    <p class="summary__total" id="summary-total">{formatMoney(total)}</p>
+    <!-- Solo aparece mientras hay una búsqueda activa -->
+    <p class="summary__filtered" id="summary-filtered" hidden>
+      {meta.summary.filtered} <strong id="summary-filtered-value"></strong>
+    </p>
+  </div>
+  <div class="summary__side">
+    <span class="summary__chip" id="summary-count">{count} {count === 1 ? meta.singular : meta.plural}</span>
+    <p class="summary__split">
+      {sellers.map((s) => (
+        <span class="summary__who">
+          <span class={`sales__dot sales__dot--${s.value}`} aria-hidden="true"></span>{s.label}
+          <strong id={`summary-${s.value}`}>{formatMoney(bySeller[s.value])}</strong>
+        </span>
+      ))}
+    </p>
+  </div>
+</section>

@@ -1,0 +1,138 @@
+/* Contenedor de la página y título */
+.sales { max-width: 72rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+.sales__head h1 { margin: 0 0 0.25rem; font-size: 1.5rem; font-weight: 500; }
+.sales__head p { margin: 0 0 1.25rem; font-size: 0.95rem; color: var(--muted); }
+.sales__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Barra superior: buscador y contador */
+.sales__bar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.75rem; }
+.sales__search { position: relative; flex: 1; max-width: 18rem; }
+.sales__search svg {
+  position: absolute; left: 0.7rem; top: 50%; width: 1rem; height: 1rem;
+  transform: translateY(-50%); color: var(--muted); pointer-events: none;
+}
+.sales__search input {
+  width: 100%; height: 2.25rem; padding: 0 0.75rem 0 2.1rem;
+  font: inherit; font-size: 0.85rem; color: var(--fg);
+  background: transparent; border: 1px solid var(--line-strong); border-radius: 8px;
+  appearance: none; transition: border-color 0.25s, box-shadow 0.25s;
+}
+.sales__search input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgb(45 143 213 / 0.25); }
+.sales__actions { display: flex; align-items: center; gap: 1rem; }
+.sales__count { font-size: 0.8rem; color: var(--muted); }
+
+/* Contenedor con borde (scroll horizontal en pantallas medias) y tabla sin franjas */
+.sales__box { border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; }
+.sales__table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.sales__table th {
+  padding: 0.75rem 1rem; text-align: left; white-space: nowrap; font-size: 0.75rem; font-weight: 500;
+  color: var(--muted); border-bottom: 1px solid var(--line-strong);
+}
+.sales__table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--line); transition: background 0.2s; }
+.sales__table tbody tr:last-child td { border-bottom: 0; }
+.sales__table tr[hidden] { display: none !important; }
+
+/* Hover: fondo sutil y barra azul a la izquierda */
+.sales__table tbody tr:hover td { background: rgb(255 255 255 / 0.04); }
+.sales__table tbody tr:hover td:first-child { box-shadow: inset 2px 0 0 var(--blue); }
+
+/* Números a la derecha con cifras tabulares */
+.sales__num { text-align: right !important; font-variant-numeric: tabular-nums; }
+/* Monto destacado en azul */
+.sales__amount { color: var(--blue); font-weight: 600; }
+.sales__num .sales__sort { justify-content: flex-end; }
+
+/* Botón de orden: flecha según aria-sort */
+.sales__sort { all: unset; display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; }
+.sales__sort::after { content: "↕"; opacity: 0.45; }
+th[aria-sort="ascending"] .sales__sort::after { content: "↑"; opacity: 1; color: var(--blue); }
+th[aria-sort="descending"] .sales__sort::after { content: "↓"; opacity: 1; color: var(--blue); }
+.sales__sort:hover { color: var(--fg); }
+.sales__sort:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+
+/* Observaciones: una línea con puntos suspensivos (el texto completo está en el title) */
+.sales__notes { display: block; max-width: 16rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.sales__dash { color: var(--muted); }
+
+/* Filas clicables: abren el modal de edición. El lápiz aparece al pasar el mouse o enfocar */
+.sales__table tbody tr { cursor: pointer; }
+.sales__table tbody tr:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+.sales__table .sales__tools { width: 1%; padding: 0 0.5rem 0 0; text-align: right; white-space: nowrap; }
+.sales__pencil { width: 1rem; height: 1rem; margin-right: 0.25rem; vertical-align: middle; color: var(--blue); }
+
+/* Papelera: aparece al pasar el mouse; el primer toque pide confirmar (rosa) */
+.sales__del {
+  all: unset; display: inline-flex; align-items: center; gap: 0.35rem; vertical-align: middle;
+  padding: 0.375rem 0.5rem; border-radius: 8px; font-size: 0.75rem; color: var(--muted); cursor: pointer;
+  transition: opacity 0.2s, color 0.2s, background 0.2s;
+}
+.sales__del svg { width: 1rem; height: 1rem; }
+.sales__del-label { display: none; }
+.sales__del:hover { color: var(--pink); background: rgb(232 51 127 / 0.12); }
+.sales__del:focus-visible { outline: 2px solid var(--blue); }
+.sales__del.is-armed { color: #fff; background: var(--pink); }
+.sales__del.is-armed .sales__del-label { display: inline; }
+.sales__pencil, .sales__del { opacity: 0; }
+.sales__table tr:hover :is(.sales__pencil, .sales__del),
+.sales__table tr:focus-visible :is(.sales__pencil, .sales__del),
+.sales__del:focus-visible, .sales__del.is-armed { opacity: 1; }
+
+/* Fila que se está borrando: se desvanece */
+.sales__table tr.is-removing { opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+
+/* Fila recién añadida o editada: destello azul que se desvanece */
+.sales__table tr.is-new { animation: row-in 1.6s ease-out; }
+@keyframes row-in { from { background: rgb(45 143 213 / 0.25); } }
+
+/* Error del servidor (cargar o borrar) */
+.sales__error { margin: 0 0 0.75rem; font-size: 0.85rem; color: var(--pink); }
+
+/* Sin resultados */
+.sales__empty { margin: 0; padding: 1.75rem 1rem; text-align: center; color: var(--muted); }
+
+/* Móvil: cada fila pasa a ser una tarjeta con etiquetas */
+@media (max-width: 760px) {
+  .sales { padding-top: 2rem; }
+  .sales__bar { flex-direction: column; align-items: stretch; }
+  .sales__search { max-width: none; }
+  .sales__actions { justify-content: space-between; }
+  .sales__box { border: 0; border-radius: 0; overflow: visible; }
+  .sales__table, .sales__table tbody { display: block; }
+  .sales__table thead { display: none; }
+  .sales__table tr {
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0.4rem 1rem;
+    margin-bottom: 0.75rem; padding: 0.875rem 1rem;
+    border: 1px solid var(--line); border-radius: 12px; transition: border-color 0.25s;
+  }
+  .sales__table tr:hover { border-color: var(--blue); }
+  .sales__table td { display: flex; justify-content: space-between; gap: 1rem; grid-column: 1 / -1; padding: 0; border: 0; }
+  .sales__table td::before { content: attr(data-label); color: var(--muted); }
+  /* Descripción arriba a la izquierda y monto arriba a la derecha, sin etiqueta */
+  .sales__table td:nth-child(1) { grid-column: 1; grid-row: 1; font-size: 1rem; }
+  .sales__table td:nth-child(5) { grid-column: 2; grid-row: 1; font-size: 1rem; font-weight: 500; }
+  .sales__table td:nth-child(1)::before, .sales__table td:nth-child(5)::before { display: none; }
+  /* Tarjeta: pie con la papelera siempre visible y su texto; sin lápiz */
+  .sales__table td.sales__tools {
+    display: flex; justify-content: flex-end; width: auto; margin-top: 0.25rem; padding: 0.5rem 0 0;
+    border-top: 1px solid var(--line);
+  }
+  .sales__pencil { display: none; }
+  .sales__del { opacity: 1; }
+  .sales__del-label { display: inline; }
+  /* Observaciones: texto completo y oculto si está vacío */
+  .sales__notes { max-width: none; white-space: normal; text-align: right; }
+  .sales__table td[data-empty] { display: none; }
+  .sales__table tbody tr:hover td { background: none; }
+  .sales__table tbody tr:hover td:first-child { box-shadow: none; }
+}
+
+/* Respeta a quien prefiere menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .sales * { transition: none !important; }
+}
+
+/* Medio de venta: punto azul (Fede) o rosa (Fer) y nombre. También lo usan el formulario y el total */
+.sales__seller { display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap; }
+.sales__dot { display: inline-block; flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; }
+.sales__dot--fede { background: var(--blue); }
+.sales__dot--fer { background: var(--pink); }

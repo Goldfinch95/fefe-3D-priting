@@ -1,0 +1,90 @@
+---
+// Tabla de ventas: estructura (título, total, buscador, botón, tabla y modal).
+// Las ventas se leen de la base de datos en el servidor y viajan dentro de la página.
+import { meta, columns, errors, type Sale } from "./sales.data";
+import { listSales } from "./sales.repo";
+import { summarize } from "./sales.summary";
+import SalesModal from "./SalesModal.astro";
+import SalesSummary from "./SalesSummary.astro";
+import "./sales.css";
+
+let sales: Sale[] = [];
+let loadFailed = false;
+try {
+  sales = await listSales();
+} catch (e) {
+  console.error("No se pudieron leer las ventas", e);
+  loadFailed = true;
+}
+// "<" escapado para que el JSON no pueda cerrar la etiqueta <script>
+const data = JSON.stringify(sales).replace(/</g, "\\u003c");
+---
+
+<section class="sales" id="sales" data-singular={meta.singular} data-plural={meta.plural} data-load-error={loadFailed || undefined}
+  data-sb-url={import.meta.env.PUBLIC_SUPABASE_URL} data-sb-key={import.meta.env.PUBLIC_SUPABASE_ANON_KEY}>
+  <header class="sales__head">
+    <h1>{meta.title}</h1>
+    <p>{meta.description}</p>
+  </header>
+
+  <SalesSummary summary={summarize(sales)} />
+
+  <!-- Barra superior: buscador, contador y botón para añadir -->
+  <div class="sales__bar">
+    <div class="sales__search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>
+      </svg>
+      <input id="sales-q" type="search" placeholder={meta.searchLabel} aria-label={meta.searchLabel} />
+    </div>
+    <div class="sales__actions">
+      <span class="sales__count" id="sales-count" aria-live="polite"></span>
+      <button type="button" class="btn" data-sale-open>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+        {meta.add}
+      </button>
+    </div>
+  </div>
+
+  <!-- Errores del servidor (cargar o borrar) -->
+  <p class="sales__error" id="sales-error" role="alert" hidden={!loadFailed}>{loadFailed ? errors.load : ""}</p>
+
+  <!-- Los roles mantienen la semántica de tabla cuando el CSS la convierte en tarjetas -->
+  <div class="sales__box">
+    <table class="sales__table" role="table">
+      <caption class="sales__sr">
+        {meta.title} con {columns.customer.toLowerCase()}, {columns.date.toLowerCase()}, {columns.quantity.toLowerCase()}, {columns.amount.toLowerCase()}, {columns.seller.toLowerCase()} y {columns.notes.toLowerCase()}
+      </caption>
+      <thead role="rowgroup">
+        <tr role="row">
+          <th role="columnheader" scope="col"><button class="sales__sort" data-col="0" data-type="text">{columns.product}</button></th>
+          <th role="columnheader" scope="col"><button class="sales__sort" data-col="1" data-type="text">{columns.customer}</button></th>
+          <th role="columnheader" scope="col"><button class="sales__sort" data-col="2" data-type="number">{columns.date}</button></th>
+          <th role="columnheader" scope="col" class="sales__num"><button class="sales__sort" data-col="3" data-type="number">{columns.quantity}</button></th>
+          <th role="columnheader" scope="col" class="sales__num"><button class="sales__sort" data-col="4" data-type="number">{columns.amount}</button></th>
+          <th role="columnheader" scope="col"><button class="sales__sort" data-col="5" data-type="text">{columns.seller}</button></th>
+          <th role="columnheader" scope="col">{columns.notes}</th>
+          <th role="columnheader" scope="col" class="sales__tools"><span class="sales__sr">Acciones</span></th>
+        </tr>
+      </thead>
+      <!-- Las filas las arma sales.client.ts a partir del JSON de abajo -->
+      <tbody role="rowgroup"></tbody>
+    </table>
+    <p class="sales__empty" id="sales-empty" hidden></p>
+  </div>
+
+  <script type="application/json" id="sales-data" is:inline set:html={data} />
+
+  <!-- Avisos para lectores de pantalla (¿Seguro?, venta eliminada) -->
+  <p class="sales__sr" id="sales-status" aria-live="polite"></p>
+
+  <SalesModal />
+</section>
+
+<!-- Astro empaqueta este script y lo carga una sola vez -->
+<script>
+  import { initSales } from "./sales.client";
+  initSales();
+</script>

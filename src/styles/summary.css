@@ -1,0 +1,33 @@
+/* Tarjeta de total: borde azul con un brillo suave, como el navbar */
+.summary {
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 0.75rem 1.5rem; flex-wrap: wrap;
+  margin: 0 0 1.25rem; padding: 1rem 1.25rem;
+  background: var(--panel); border: 1px solid var(--blue); border-radius: 12px;
+  box-shadow: 0 0 22px -8px rgb(45 143 213 / 0.55);
+}
+.summary p { margin: 0; }
+.summary__label { font-size: 0.78rem; color: var(--muted); }
+.summary__total {
+  font-size: clamp(1.9rem, 6vw, 2.5rem); font-weight: 600; line-height: 1.1;
+  font-variant-numeric: tabular-nums; color: var(--fg); overflow-wrap: anywhere;
+}
+.summary__filtered { margin-top: 0.35rem !important; font-size: 0.82rem; color: var(--muted); }
+.summary__filtered strong { color: var(--blue); font-weight: 600; font-variant-numeric: tabular-nums; }
+.summary__side { text-align: right; display: grid; gap: 0.4rem; justify-items: end; min-width: 0; }
+.summary__chip {
+  font-size: 0.75rem; padding: 0.15rem 0.6rem; border-radius: 999px;
+  background: rgb(232 51 127 / 0.16); color: #f06aa3;
+}
+.summary__biggest { font-size: 0.78rem; color: var(--muted); max-width: 100%; overflow-wrap: anywhere; }
+
+/* En celular: todo apilado a la izquierda */
+@media (max-width: 560px) {
+  .summary { flex-direction: column; align-items: stretch; }
+  .summary__side { text-align: left; justify-items: start; }
+}
+
+/* Ventas: total de cada vendedor debajo de la cantidad */
+.summary__split { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.25rem 1rem; font-size: 0.8rem; color: var(--muted); }
+.summary__who { display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
+.summary__who strong { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) { .summary__split { justify-content: flex-start; } }

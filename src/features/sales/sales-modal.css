@@ -1,0 +1,17 @@
+/* Medio de venta: dos botones tipo interruptor (el radio real queda oculto pero accesible) */
+.seg { margin: 0; padding: 0; border: 0; min-width: 0; }
+.seg legend { padding: 0; margin-bottom: 0.35rem; font-size: 0.75rem; color: var(--muted); }
+.seg__opts { display: flex; border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; }
+.seg[aria-invalid] .seg__opts { border-color: var(--pink); }
+.seg__opt { position: relative; flex: 1; cursor: pointer; }
+.seg__opt + .seg__opt { border-left: 1px solid var(--line-strong); }
+.seg__opt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.seg__opt span {
+  display: flex; align-items: center; justify-content: center; gap: 0.45rem; height: 2.25rem;
+  font-size: 0.85rem; color: var(--muted); transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.seg__opt:hover span { color: var(--fg); }
+.seg__opt input:checked + span { color: var(--fg); background: rgb(45 143 213 / 0.2); box-shadow: inset 0 0 0 1px var(--blue); }
+.seg__opt:has(input[value="fer"]) input:checked + span { background: rgb(232 51 127 / 0.18); box-shadow: inset 0 0 0 1px var(--pink); }
+.seg__opt input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) { .seg__opt span { transition: none; } }

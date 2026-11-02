@@ -1,0 +1,78 @@
+---
+// Modal para añadir o editar una venta: usa <dialog> nativo (foco atrapado, Esc y fondo incluidos)
+import { columns, form, sellers } from "./sales.data";
+import "../../styles/modal.css";
+import "./sales-modal.css";
+
+// Campos en grilla de 2 columnas (el producto, el medio de venta y las observaciones van aparte)
+const grid = [
+  { name: "customer", type: "text", maxlength: "120", placeholder: form.placeholders.customer },
+  { name: "date", type: "date" },
+  { name: "quantity", type: "number", min: "1", step: "1", inputmode: "numeric" },
+  { name: "amount", type: "number", min: "0", step: "any", inputmode: "decimal", placeholder: form.placeholders.amount },
+] as const;
+---
+
+<dialog class="modal" id="sale-modal" aria-labelledby="sale-modal-title">
+  <form class="modal__form" novalidate>
+    <div class="modal__head">
+      <h2 id="sale-modal-title" data-modal-title>{form.title}</h2>
+      <button type="button" class="modal__x" data-modal-close aria-label={form.close}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="field">
+      <label for="f-product">{columns.product}</label>
+      <input id="f-product" name="product" type="text" autocomplete="off" autofocus
+        placeholder={form.placeholders.product} maxlength="200" aria-required="true" aria-describedby="e-product" />
+      <p class="field__error" id="e-product" hidden></p>
+    </div>
+
+    <div class="modal__grid">
+      {grid.map((f) => (
+        <div class="field">
+          <label for={`f-${f.name}`}>{columns[f.name]}</label>
+          <input id={`f-${f.name}`} name={f.name} type={f.type} autocomplete="off" aria-required="true"
+            aria-describedby={`e-${f.name}`} placeholder={"placeholder" in f ? f.placeholder : undefined}
+            min={"min" in f ? f.min : undefined} step={"step" in f ? f.step : undefined}
+            inputmode={"inputmode" in f ? f.inputmode : undefined} maxlength={"maxlength" in f ? f.maxlength : undefined} />
+          <p class="field__error" id={`e-${f.name}`} hidden></p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Medio de venta: dos botones (radios nativos, se manejan también con las flechas del teclado) -->
+    <fieldset class="seg" aria-describedby="e-seller">
+      <legend>{columns.seller}</legend>
+      <div class="seg__opts">
+        {sellers.map((s) => (
+          <label class="seg__opt">
+            <input type="radio" name="seller" value={s.value} />
+            <span><i class={`sales__dot sales__dot--${s.value}`} aria-hidden="true"></i>{s.label}</span>
+          </label>
+        ))}
+      </div>
+      <p class="field__error" id="e-seller" hidden></p>
+    </fieldset>
+
+    <div class="field">
+      <label for="f-notes">{columns.notes} {form.optional}</label>
+      <textarea id="f-notes" name="notes" maxlength="1000"></textarea>
+    </div>
+
+    <p class="modal__error" id="modal-error" role="alert" hidden></p>
+
+    <div class="modal__actions">
+      <button type="button" class="btn btn--ghost" data-modal-close>{form.cancel}</button>
+      <button type="submit" class="btn" data-modal-submit>{form.submit}</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  import { initSaleModal } from "./sales-modal.client";
+  initSaleModal();
+</script>

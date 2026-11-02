@@ -3,7 +3,7 @@
 // Se dibuja en el servidor y expenses.client.ts la actualiza cuando algo cambia.
 import { meta, formatMoney } from "./expenses.data";
 import type { Summary } from "./expenses.summary";
-import "./expenses-summary.css";
+import "../../styles/summary.css";
 
 interface Props { summary: Summary }
 const { summary } = Astro.props;
